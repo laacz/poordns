@@ -10,7 +10,7 @@ Simple PowerDNS MySQL backend management interface within one PHP file. Spaghett
 
 ## Installation
 
-Download from releases, upload to server, add `config.php` (see below), profit.
+Download index.php [from releases](https://github.com/laacz/poordns/releases), upload to server, add `config.php` (see below), profit.
 
 ## Configuration
 
