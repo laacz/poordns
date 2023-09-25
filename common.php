@@ -166,3 +166,12 @@ function recordTypes(): array
         'WKS',
     ];
 }
+
+function hl(string $within, string $search): string
+{
+    return str_replace(
+        $search,
+        '<span style="background-color: #ff0;">' . $search . '</span>',
+        $within,
+    );
+}

@@ -126,7 +126,9 @@ try {
 
                 $dirty = false;
                 foreach (['type' => 'string', 'name' => 'string', 'content' => 'string', 'ttl' => 'int', 'prio' => 'int'] as $field => $type) {
-                    $val = $type == 'int' ? (int)$_POST[$field][$id] : $_POST[$field][$id];
+                    $val = $type == 'int'
+                        ? (int)($_POST[$field][$id] ?? 0)
+                        : ($_POST[$field][$id] ?? null);
                     if ($record->$field !== $val) {
                         $record->$field = $val;
                         $dirty = true;
@@ -163,16 +165,33 @@ try {
         global $domains;
         $domains = [];
         $domains = Domain::all();
-        $page = 'domains';
         require 'pages/domains.php';
     });
 
     handle('domain', function () {
         global $domain, $default_ttl;
         $domain = Domain::find($_GET['id']);
-        $page = 'domain';
         $default_ttl = SOA::from($domain->soa()->content)->ttl;
         require('pages/domain.php');
+    });
+
+    handle('search', function () {
+        $q = '%' . $_GET['q'] . '%';
+        $sql = '
+        SELECT * 
+        FROM domains 
+        WHERE name LIKE ?
+           OR id IN (
+               SELECT domain_id
+               FROM records 
+               WHERE name LIKE ? OR content LIKE ?
+           )';
+        $domains = DB::query($sql, [$q, $q, $q])->fetchAll(PDO::FETCH_CLASS, Domain::class);
+
+        $sql = 'SELECT * FROM records WHERE name LIKE ? OR content LIKE ?';
+        $records = DB::query($sql, [$q, $q])->fetchAll(PDO::FETCH_CLASS, Record::class);
+
+        require('pages/search.php');
     });
 
     if (!handled()) {

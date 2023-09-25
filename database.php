@@ -14,11 +14,14 @@ class DB
             $db_host = 'localhost';
         }
         self::$DB = new PDO("mysql:host=$db_host;dbname=$db_base", $db_user, $db_pass);
+        self::$DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
-    public static function query(string $query): PDOStatement
+    public static function query(string $query, array $params = []): PDOStatement
     {
-        return self::$DB->query($query);
+        $stmt = self::$DB->prepare($query);
+        $stmt->execute($params);
+        return $stmt;
     }
 
     public static function prepare(string $query): PDOStatement
