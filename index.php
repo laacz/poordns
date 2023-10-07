@@ -6,7 +6,9 @@ $db_host = '';
 $db_user = '';
 $db_pass = '';
 $db_base = 'pdns';
+// SOA related stuff
 $pri_dns = 'ns-pri.example.com';
+// User and password for HTTP basic authentication
 $user = '';
 $pass = '';
 
@@ -19,7 +21,7 @@ if (file_exists('config.php')) {
 if ($db_user === '') {
     ?>
     <h1>Script not set up</h1>
-    <p>Please create a file named <code>config.php</code> with the following contents:</p>
+    <p>Please create a file named <code>config.php</code> with the following contents, or edit variables at the top of this file:</p>
 
     <pre>
 &lt;?php
