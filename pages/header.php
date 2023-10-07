@@ -20,13 +20,22 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="title"><a href="<?= uri('') ?>">PowerDNS</a></h1>
+    <h1 class="title"><a href="<?=uri('')?>">PoorDNS</a></h1>
+
+    <?php if (count(errors())) { ?>
+        <div class="notification is-light is-danger">
+            <?php foreach (errors() as $error) { ?>
+                <p><?=$error?></p>
+            <?php } ?>
+        </div>
+    <?php } ?>
+
     <div id="content">
         <form action="">
             <input type="hidden" name="page" value="search">
             <div class="field has-addons">
                 <div class="control is-expanded">
-                    <input type="search" class="input" name="q" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>"
+                    <input type="search" class="input" name="q" value="<?=htmlspecialchars($_GET['q'] ?? '')?>"
                            placeholder="Search for anything..."/>
                 </div>
                 <div class="control">

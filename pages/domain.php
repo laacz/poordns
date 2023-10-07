@@ -97,7 +97,7 @@
             <input type="text" name="new_prio" value="" class="input is-small" placeholder="priority">
         </div>
         <div class="control">
-            <button type="submit" name="action" value="add_record" class="button is-small is-success is-outlined">Add record</button>
+            <button type="submit" name="action" value="add-record" class="button is-small is-success is-outlined">Add record</button>
         </div>
     </div>
 </form>

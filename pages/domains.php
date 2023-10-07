@@ -25,7 +25,7 @@
         <?php foreach ($domains as $domain) { ?>
             <tr>
                 <td>
-                    <a href="<?=uri('domain', array('id' => $domain->id))?>"><?=$domain->name?></a>
+                    <a href="<?=uri('domain', array('id' => $domain->id))?>"><?=$domain->name ?: $domain->id?></a>
                 </td>
             </tr>
         <?php } ?>

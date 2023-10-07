@@ -1,17 +1,13 @@
 <?php
 
-/**
- * Returns URI for given page and parameters.
- */
+// Returns URI for given page and parameters.
 function uri(string $page, array $params = []): string
 {
     $params['page'] = $page;
     return $_SERVER['SCRIPT_NAME'] . '?' . http_build_query($params);
 }
 
-/**
- * Class used to deal with SOA records.
- */
+// Class used to deal with SOA records.
 class SOA
 {
     public string $primary;
@@ -22,11 +18,13 @@ class SOA
     public int $expire;
     public int $ttl;
 
+    // Parses SOA record from given string.
     public static function from(string $string): SOA
     {
         return new self(...explode(' ', $string));
     }
 
+    // Constructs SOA record from given parameters.
     public function __construct(string $primary, string $email, int $serial, int $refresh, int $retry, int $expire, int $ttl)
     {
         $this->primary = $primary;
@@ -38,6 +36,7 @@ class SOA
         $this->ttl = $ttl;
     }
 
+    // Increments serial number for the SOA record (current date + index).
     public function incrementSerial(): SOA
     {
         // serial contains of YYYYMMDDNN, where YYYYMMDD is current date and NN is the next sequence number, starting at 1
@@ -54,6 +53,7 @@ class SOA
         return $this;
     }
 
+    // Returns string representation of the SOA record.
     public function __toString(): string
     {
         return $this->primary . ' ' . $this->email . ' ' . $this->serial . ' ' . $this->refresh . ' ' . $this->retry . ' ' . $this->expire . ' ' . $this->ttl;
@@ -77,6 +77,7 @@ function dump(mixed ...$vars): void
     die;
 }
 
+// Returns true if the request has been handled by any handler.
 function handled($val = null)
 {
     static $handled = false;
@@ -87,23 +88,24 @@ function handled($val = null)
 }
 
 // POST handler
-function handlePost(string $action, callable $callback): void
+function handlePost(string $action, string $callback): void
 {
-    if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0 && (($_POST['action'] ?? '') === $action)) {
+    if (strcasecmp($_SERVER['REQUEST_METHOD'] ?? 'GET', 'POST') === 0 && (($_POST['action'] ?? '') === $action)) {
         handled(true);
         echo $callback();
     }
 }
 
 // GET handler
-function handle(string $page, callable $callback): void
+function handle(string $page, string $callback): void
 {
-    if (strcasecmp($_SERVER['REQUEST_METHOD'], 'GET') === 0 && (($_GET['page'] ?? '') === $page)) {
+    if (strcasecmp($_SERVER['REQUEST_METHOD'] ?? 'GET', 'GET') === 0 && (($_GET['page'] ?? '') === $page)) {
         handled(true);
         echo $callback();
     }
 }
 
+// Let's just hardcode them for now
 function recordTypes(): array
 {
     return [
@@ -167,6 +169,7 @@ function recordTypes(): array
     ];
 }
 
+// Highlights search term in given string.
 function hl(string $within, string $search): string
 {
     return str_replace(
@@ -175,3 +178,19 @@ function hl(string $within, string $search): string
         $within,
     );
 }
+
+// Returns value from POST or GET parameters.
+function input(string $name, string $default_value = null): mixed {
+    return $_POST[$name] ?? $_GET[$name] ?? $default_value;
+}
+
+// Returns all errors or adds a new one to the list.
+function errors(string $message = null): ?array {
+    static $errors = [];
+    if ($message === null) {
+        return $errors;
+    }
+    $errors[] = $message;
+    return null;
+}
+
