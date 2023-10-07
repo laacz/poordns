@@ -1,6 +1,6 @@
 # PoorDNS
 
-Simple PowerDNS MySQL backend management interface within one PHP file. Spaghetti, of course.
+Simple PowerDNS MySQL or Sqlite3 backend management interface within one PHP file. Spaghetti, of course.
 
 I've used it myself for years (decades if you will). It's a bit refactored, bulmified and (maybe) released for the world
 to see.
