@@ -2,6 +2,7 @@
 
 // default configuration when using this script, create config.php with overrides
 // see readme if unclear
+$db_backend = '';
 $db_host = '';
 $db_user = '';
 $db_pass = '';
@@ -18,25 +19,28 @@ if (file_exists('config.php')) {
     require_once 'config.php';
 }
 
-if ($db_user === '') {
+if ($db_backend === '') {
+    var_export($db_backend);
     ?>
     <h1>Script not set up</h1>
     <p>Please create a file named <code>config.php</code> with the following contents, or edit variables at the top of this file:</p>
 
     <pre>
 &lt;?php
-// MySQL related configuration
+// Database related configuration
+$db_backend = 'mysql or sqlite';
+$db_base = 'mysql database name or sqlite filename';
 $db_host = 'database host (empty means localhost)';
-$db_user = 'mysql username';
-$db_pass = 'mysql password';
-$db_base = 'mysql database';
+$db_user = 'mysql username or empty if sqlite';
+$db_pass = 'mysql password or empty if sqlite';
 
 // SOA related stuff
 $pri_dns = 'primary nameserver hostname (FQDN)';
 
 // Following MUST be set if not behind other authentication
 $user = 'http basic authentication username';
-$pass = 'http basic authentication password';</pre>
+$pass = 'http basic authentication password';
+</pre>
     <?php
     die();
 }
@@ -60,7 +64,7 @@ try {
     require('database.php');
     require('controllers.php');
 
-    DB::init($db_host, $db_user, $db_pass, $db_base);
+    DB::init($db_host, $db_user, $db_pass, $db_base, $db_backend);
 
     handlePost('delete-domain', 'deleteDomain');
     handlePost('add-domain', 'addDomain');

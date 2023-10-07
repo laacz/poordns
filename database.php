@@ -8,12 +8,16 @@ class DB
 {
     public static PDO $DB;
 
-    public static function init(string $db_host, string $db_user, string $db_pass, string $db_base): void
+    public static function init(string $db_host, string $db_user, string $db_pass, string $db_base, string $db_backend): void
     {
         if ($db_host === '') {
             $db_host = 'localhost';
         }
-        self::$DB = new PDO("mysql:host=$db_host;dbname=$db_base", $db_user, $db_pass);
+        self::$DB = match ($db_backend) {
+            'mysql' => new PDO("mysql:host=$db_host;dbname=$db_base", $db_user, $db_pass),
+            'sqlite' => new PDO("sqlite:$db_base"),
+            default => throw new Exception("Unknown database backend: $db_backend"),
+        };
         self::$DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
@@ -73,10 +77,12 @@ class Model
             $fields[$k] = $v;
         }
         $set_str = ' SET ' . implode(', ', array_map(fn($k) => "`$k` = ?", array_keys($fields)));
+        $columns = implode(', ', array_keys($fields));
+        $values = implode(', ', array_fill(0, count($fields), '?'));
         if ($this->id !== null) {
             $sql = "UPDATE " . self::tableName() . $set_str . " WHERE id = " . $this->id;
         } else {
-            $sql = "INSERT INTO " . self::tableName() . $set_str;
+            $sql = "INSERT INTO " . self::tableName() . " ($columns) VALUES ($values)";
         }
         $stmt = DB::prepare($sql);
         $stmt->execute(array_values($fields));

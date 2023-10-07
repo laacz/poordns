@@ -64,9 +64,14 @@ class SOA
 function dump(mixed ...$vars): void
 {
     foreach ($vars as $var) {
-        echo '<pre style="border: 1px solid #ccc; padding: .5rem;">';
+        if (php_sapi_name() !== 'cli') {
+            echo '<pre style="border: 1px solid #ccc; padding: .5rem;">';
+        }
         print_r($var);
-        echo '</pre>';
+        echo "\n";
+        if (php_sapi_name() !== 'cli') {
+            echo '</pre>';
+        }
     }
 }
 
@@ -88,7 +93,7 @@ function handled($val = null)
 }
 
 // POST handler
-function handlePost(string $action, string $callback): void
+function handlePost(string $action, string|callable $callback): void
 {
     if (strcasecmp($_SERVER['REQUEST_METHOD'] ?? 'GET', 'POST') === 0 && (($_POST['action'] ?? '') === $action)) {
         handled(true);
@@ -97,7 +102,7 @@ function handlePost(string $action, string $callback): void
 }
 
 // GET handler
-function handle(string $page, string $callback): void
+function handle(string $page, string|callable $callback): void
 {
     if (strcasecmp($_SERVER['REQUEST_METHOD'] ?? 'GET', 'GET') === 0 && (($_GET['page'] ?? '') === $page)) {
         handled(true);
@@ -180,12 +185,14 @@ function hl(string $within, string $search): string
 }
 
 // Returns value from POST or GET parameters.
-function input(string $name, string $default_value = null): mixed {
+function input(string $name, string $default_value = null): mixed
+{
     return $_POST[$name] ?? $_GET[$name] ?? $default_value;
 }
 
 // Returns all errors or adds a new one to the list.
-function errors(string $message = null): ?array {
+function errors(string $message = null): ?array
+{
     static $errors = [];
     if ($message === null) {
         return $errors;

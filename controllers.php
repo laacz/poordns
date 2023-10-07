@@ -33,7 +33,9 @@ function addDomain(): void
     $soa->domain_id = $domain->id;
     $soa->save();
 
-    header('Location: ' . uri('domain', array('id' => $domain->id)));
+    if (!php_sapi_name() == 'cli') {
+        header('Location: ' . uri('domain', array('id' => $domain->id)));
+    }
 }
 
 function deleteRecord(): void
@@ -45,7 +47,10 @@ function deleteRecord(): void
     $domain = Domain::find($record->domain_id);
     $record->delete();
 
-    header('Location: ' . uri('domain', array('id' => $domain->id)));
+    if (!php_sapi_name() == 'cli') {
+        header('Location: ' . uri('domain', array('id' => $domain->id)));
+    }
+
 }
 
 function saveDomain(): void
@@ -82,7 +87,9 @@ function saveDomain(): void
             $soa->save();
         }
 
-        header('Location: ' . uri('domain', array('id' => $domain->id)));
+        if (!php_sapi_name() == 'cli') {
+            header('Location: ' . uri('domain', array('id' => $domain->id)));
+        }
     } else {
         dd('no domain');
     }
@@ -110,7 +117,10 @@ function addRecord(): void
             $soa->content = SOA::from($soa->content)->incrementSerial() . '';
             $soa->save();
         }
-        header('Location: ' . uri('domain', array('id' => $domain->id)));
+
+        if (!php_sapi_name() == 'cli') {
+            header('Location: ' . uri('domain', array('id' => $domain->id)));
+        }
     } else {
         dd('no domain');
     }
@@ -119,14 +129,16 @@ function addRecord(): void
 function deleteDomain(): void
 {
     $domain = Domain::find($_POST['id']);
-    $domain->delete();
     foreach (Record::all(['domain_id' => $domain->id]) as $record) {
         $record->delete();
     }
-    header('Location: ' . uri(''));
+    $domain->delete();
+    if (!php_sapi_name() == 'cli') {
+        header('Location: ' . uri(''));
+    }
 }
 
-function search()
+function search(): void
 {
     $q = '%' . $_GET['q'] . '%';
     $sql = '
